@@ -1,0 +1,15 @@
+{
+  "name": "io.github.nekolab-vrc.hub",
+  "displayName": "NekoLAB Hub",
+  "version": "1.0.0",
+  "unity": "2022.3",
+  "description": "The NekoLAB window: finds the NekoLAB products in the project and sets them up on your avatar. Never goes online; reads or writes nothing outside the project.",
+  "author": {
+    "name": "NekoLAB",
+    "url": "https://nekodev.booth.pm/"
+  },
+  "license": "MIT",
+  "vpmDependencies": {
+    "com.vrchat.avatars": ">=3.10.0"
+  }
+}
