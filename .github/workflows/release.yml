@@ -1,3 +1,5 @@
+# VRChat のひな形（vrchat-community/template-package）の Build Release に、NekoLAB が直しを足した物（「NekoLAB」と書いた所）：
+# 何かを作る前の個人情報の点検と、版を下書きで作ってファイルを全部付けてから公開する形。
 name: Build Release
 
 on: 
@@ -5,14 +7,14 @@ on:
 
 jobs:
 
-  # Validate Repository Configuration
+  # リポジトリの設定を確かめる
   config:
     runs-on: ubuntu-latest
     outputs:
       config_package: ${{ steps.config_package.outputs.configPackage }}
     steps:
 
-    # Ensure that required repository variable has been created for the Package
+    # パッケージの名前の変数（PACKAGE_NAME）が作ってあるか
     - name: Validate Package Config
       id: config_package
       run: |
@@ -22,8 +24,8 @@ jobs:
           echo "configPackage=false" >> $GITHUB_OUTPUT;
         fi
 
-  # Build and release the Package
-  # If the repository is not configured properly, this job will be skipped
+  # パッケージを組み立てて、版を出す
+  # リポジトリの設定が足りない時は、ここは飛ばす
   build:
     needs: config
     runs-on: ubuntu-latest
@@ -34,11 +36,56 @@ jobs:
     if: needs.config.outputs.config_package == 'true'
     steps:
 
-      # Checkout Local Repository
+      # リポジトリの中身を取り出す
       - name: Checkout
         uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
 
-      # Get the Package version based on the package.json file
+      # NekoLAB の個人情報の点検（NekoLAB が足した）：パッケージに、入れてよい物の一覧にないファイルや、個人の情報に見える文字
+      # （PC の場所・ユーザーのフォルダ・メールアドレス・IP アドレス・鍵）があれば、何も作らずにここで止める。
+      # 記録は誰でも読めるので、見つけた場所だけを出し、見つけた文字そのものは出さない。
+      - name: NekoLAB personal check
+        working-directory: "${{ env.packagePath }}"
+        shell: python3 {0}
+        run: |
+          import os, re, sys
+          looks_personal = [
+              ("a path on a computer", r"(?<![A-Za-z])[A-Za-z]:[\\/]"),
+              ("a user's folder", r"(?i)[\\/](Users|home)[\\/]"),
+              ("an e-mail address", r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"),
+              ("an IP address", r"(?<![\d.])\d{1,3}(\.\d{1,3}){3}(?![\d.])"),
+              ("a key", r"(sk-[A-Za-z0-9]{16,}|ghp_[A-Za-z0-9]{20,}|github[_]pat[_]|AKIA[0-9A-Z]{16}|xox[baprs]-|-{5}BEGIN)"),
+          ]
+          may_hold = [r"package\.json", r"CHANGELOG\.md", r"LICENSE\.md", r"README\.md",
+                      r"Editor", r"Editor/[A-Za-z0-9_]+\.cs", r"Editor/NekoLab\.Hub\.Editor\.asmdef"]
+          found = []
+          for here, folders, files in os.walk("."):
+              for name in sorted(folders) + sorted(files):
+                  path = os.path.join(here, name)
+                  rel = os.path.relpath(path, ".").replace(os.sep, "/")
+                  kinds = [what for what, p in looks_personal if re.search(p, rel)]
+                  shown = "(a name that looks personal: " + ", ".join(kinds) + ")" if kinds else rel
+                  if kinds:
+                      found.append("looks personal: " + shown)
+                  if not any(re.fullmatch(p, rel[:-5] if rel.endswith(".meta") else rel) for p in may_hold):
+                      found.append("not on the list of what the package may hold: " + shown)
+                  if os.path.isdir(path):
+                      continue
+                  try:
+                      with open(path, encoding="utf-8-sig") as f:
+                          text = f.read()
+                  except (UnicodeDecodeError, OSError):
+                      found.append("not a UTF-8 text file: " + shown)
+                      continue
+                  for number, line in enumerate(text.split("\n"), 1):
+                      for what, p in looks_personal:
+                          if re.search(p, line):
+                              found.append("looks personal (" + what + "): " + shown + ", line " + str(number))
+          for line in found:
+              print("::error::" + line)
+          print("NekoLAB personal check: " + ("NG " + str(len(found)) if found else "OK"))
+          sys.exit(1 if found else 0)
+
+      # package.json から、パッケージのバージョンを読む
       - name: Get Version
         id: version
         uses: zoexx/github-action-json-file-properties@b9f36ce6ee6fe2680cd3c32b2c62e22eade7e590
@@ -46,38 +93,41 @@ jobs:
             file_path: "${{ env.packagePath }}/package.json"
             prop_path: "version"
     
-      # Configure the Environment Variables needed for releasing the Package
+      # 版を出すのに要る環境変数を決める
       - name: Set Environment Variables
         run: |
           echo "zipFile=${{ vars.PACKAGE_NAME }}-${{ steps.version.outputs.value }}".zip >> $GITHUB_ENV
           echo "unityPackage=${{ vars.PACKAGE_NAME }}-${{ steps.version.outputs.value }}.unitypackage" >> $GITHUB_ENV
           echo "version=${{ steps.version.outputs.value }}" >> $GITHUB_ENV
 
-      # Zip the Package for release
+      # パッケージを zip にする
       - name: Create Package Zip
         working-directory: "${{ env.packagePath }}"
         run: zip -r "${{ github.workspace }}/${{ env.zipFile }}" .
       
-      # Build a list of .meta files for future use
+      # 後で使う .meta のファイルの一覧を作る
       - name: Track Package Meta Files
         run: find "${{ env.packagePath }}/" -name \*.meta >> metaList
       
-      # Make a UnityPackage version of the Package for release
+      # パッケージの unitypackage 版を作る
       - name: Create UnityPackage
         uses: pCYSl5EDgo/create-unitypackage@v1.2.3
         with:
           package-path: ${{ env.unityPackage }}
           include-files: metaList
       
-      # Make a release tag of the version from the package.json file 
+      # package.json のバージョンで、版の印（タグ）を作る
       - name: Create Tag
         id: tag_version
         uses: rickstaa/action-create-tag@88dbf7ff6fe2405f8e8f6c6fdfd78829bc631f83
         with:
           tag: "${{ env.version }}"
       
-      # Publish the Release to GitHub
+      # GitHub に版を作る
+      # （NekoLAB：ここでは下書きで作り、ファイルを全部付けた後に、次の手順で公開する。
+      # 版を書き換えられなくする設定では、公開した後の版にはファイルを足せないため）
       - name: Make Release
+        id: release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
         with:
           files: |
@@ -85,3 +135,10 @@ jobs:
             ${{ env.unityPackage }}
             ${{ env.packagePath }}/package.json
           tag_name: ${{ env.version }}
+          draft: true
+
+      # NekoLAB：下書きを公開する。バージョンに「-」がある物（1.0.0-rc.1 など）は、プレリリースの印を付ける
+      - name: Publish Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method PATCH "repos/${{ github.repository }}/releases/${{ steps.release.outputs.id }}" -F draft=false -F prerelease=${{ contains(env.version, '-') }}
