@@ -1,5 +1,13 @@
 # 変更の記録 / Changelog
 
+## 1.0.1
+- 画面の文を短くしました（言わなくても分かる所を削りました。伝える中身は同じです）
+  / Shorter words in the window (the same things are said)
+- アバターのプレハブの中に入れた商品と、商品のプレハブのバリアントも「導入済み」と分かるようにしました（同期パラメーターのゲージにも出ます）
+  / A product inside the avatar's prefab, or a variant of the product's prefab, now counts as installed (and shows in the synced parameters gauge)
+- 丸の中の数字と「?」が、丸の真ん中に来るようにしました。暗いテーマの緑の丸の数字を、読みやすい暗い字にしました。同期パラメーターの棒の「アバター本体」の色を、棒の地と見分けやすくしました
+  / The numbers in the circles and the "?" now sit in the middle. The numbers on green circles are dark in the dark theme, so they are easier to read. The "avatar" part of the synced parameters bar stands out from the bar's ground
+
 ## 1.0.0（最初の正式な版 / first release）
 - 最初の正式な版です。動きは練習の版 1.0.0-rc.5 と同じです。コードの中の説明の文を整理して日本語にし、開発用の点検の知らせを1つ（K-12）短くしました
   / The first release. It works as the practice release 1.0.0-rc.5 did; the explanations in the code were tidied and are now in Japanese, and one message of the development check (K-12) made shorter

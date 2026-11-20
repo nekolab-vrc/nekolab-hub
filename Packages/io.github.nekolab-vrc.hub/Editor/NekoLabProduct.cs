@@ -63,8 +63,10 @@ namespace NekoLab.Hub
             foreach (var t in avatar.GetComponentsInChildren<Transform>(true))
             {
                 if (!PrefabUtility.IsAnyPrefabInstanceRoot(t.gameObject)) continue;
-                var source = AssetDatabase.GetAssetPath(PrefabUtility.GetCorrespondingObjectFromSource(t.gameObject));
-                if (prefabs.Contains(source)) return t.gameObject;
+                /* アバターのプレハブの中に入れた時やバリアントの時は、すぐ上の元が商品のプレハブではないので、元を順にたどる。
+                   商品のプレハブの中の物を商品と取り違えないよう、プレハブの根だけを見る */
+                for (var source = PrefabUtility.GetCorrespondingObjectFromSource(t.gameObject); source != null; source = PrefabUtility.GetCorrespondingObjectFromSource(source))
+                    if (source.transform.parent == null && prefabs.Contains(AssetDatabase.GetAssetPath(source))) return t.gameObject;
             }
             return null;
         }

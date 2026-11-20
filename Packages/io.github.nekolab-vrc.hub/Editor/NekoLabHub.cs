@@ -13,7 +13,7 @@ namespace NekoLab.Hub
     /// </summary>
     public class NekoLabHub : EditorWindow
     {
-        public const string ToolVersion = "1.0.0";
+        public const string ToolVersion = "1.0.1";
 
         List<NekoLabNameplate> plates = new List<NekoLabNameplate>();
         readonly Dictionary<string, NekoLabProductPage> pages = new Dictionary<string, NekoLabProductPage>();

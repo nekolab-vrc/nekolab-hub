@@ -57,7 +57,7 @@ namespace NekoLab.Hub
                     if (p == null || string.IsNullOrEmpty(p.name) || !names.Add(p.name)) continue;
                     if (p.networkSynced) own += Cost(p.valueType);
                 }
-            tally.parts.Add(new Part { label = NekoLabText.L("bits.own"), bits = own, colour = new Color(0.62f, 0.64f, 0.68f) });
+            tally.parts.Add(new Part { label = NekoLabText.L("bits.own"), bits = own, colour = NekoLabLook.AvatarOwn });
 
             /* Modular Avatar のパラメーター。入っている商品の分（ほかのギミックの分）として数える。
                Modular Avatar がない時や読めなかった時は数えない（ゲージがそう知らせる） */

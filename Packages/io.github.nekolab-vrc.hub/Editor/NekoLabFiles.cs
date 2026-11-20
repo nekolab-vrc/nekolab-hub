@@ -4,24 +4,24 @@ namespace NekoLab.Hub
 {
     static class NekoLabFiles
     {
-        public static readonly string Version = "1.0.0";
+        public static readonly string Version = "1.0.1";
 
         public static readonly string[,] List =
         {
-            { "CHANGELOG.md", "cfd1fcd43c85b424a99aa09cace6d9131b3f7b988668425f98c982a5166a52d1" },
+            { "CHANGELOG.md", "3af8b21768b487360ebfedad3dc6b8e306fc7f26aa9019884590cbae80309aec" },
             { "Editor/NekoLab.Hub.Editor.asmdef", "5649bed2f57fa1ad8cdbb33cc857bdcf00bbfb66137bcabd241e199064cfa54a" },
             { "Editor/NekoLabAutoOpen.cs", "c9e854927608bd2d0f4e8bd6c6f6f7064ea0a88365eadad9feb69b2eb3d1a52b" },
-            { "Editor/NekoLabBits.cs", "81dd9f59a75813db48255c31b70f635ba2a0c7170fe64c1bd90c848a49fdd3b9" },
+            { "Editor/NekoLabBits.cs", "c002b3c89b70a989b66e4d2eff4d4cd90dbbad31b1af7447e0d8e23691be26f7" },
             { "Editor/NekoLabCheck.cs", "c16153ad50492481b159ed6202ffdee0ab1cbb4e5903bfe34b0053f93941ffb7" },
-            { "Editor/NekoLabHub.cs", "5b51ceeaee727385e410e3561110e2aa2c2e9df76b97f41ed47fbcd7d5c4261a" },
-            { "Editor/NekoLabLook.cs", "c4cf9b77772e9ac3e15c23c92a7f00951d0762c9833e629845904c000b21da22" },
-            { "Editor/NekoLabProduct.cs", "491ecffb7698d3cdf4d309deafae66d7af49b94e33ec852a323d7e64c1b8a8aa" },
+            { "Editor/NekoLabHub.cs", "d78f494fc6b843f99a4d31aef8b32ff1748fceae07840e0ba607756c4dda3619" },
+            { "Editor/NekoLabLook.cs", "c382131fea88d89a73e36c0612d33668e9c7c76d1e971dae2e7ab3c565e4a131" },
+            { "Editor/NekoLabProduct.cs", "189225f0495a2389bb8d70ad98679b1e71006ad334d150048438b3d7f0491647" },
             { "Editor/NekoLabSupport.cs", "f45b591146e54968e398dd89b3a0d41c0b08d3ddb77850c4f840996ae466320a" },
-            { "Editor/NekoLabText.cs", "18ee90d0be96311517bb5f63d6d584164f956770a4873a60b0bb76dbc73cb9ec" },
+            { "Editor/NekoLabText.cs", "e1e28d1c27be1cb59233dea7b27642a4b84265335094a20a1b184665929f6b2a" },
             { "Editor/NekoLabUI.cs", "4983d8da9806c19ec1c19b489dd728e4b1146264b8bc1757995ab18a90a85e98" },
             { "Editor/NekoLabVersion.cs", "2f1e7f1a236d3a8c4c77272711c4a821f93ddfd1b532c94fd6014aab05994407" },
             { "LICENSE.md", "865826b4cd8e76774d9d1fbac81c51e526aaa38cc0c36943a4399883ddde73e6" },
-            { "package.json", "df9933e9707d4c2b6a1f304f94e40e3ab5819289f36f071b8fb3770172618ee0" },
+            { "package.json", "2c0ecef3369d6d0cedd121fa1ada1981b9aa6eb154446b735283f965bec5fb81" },
         };
     }
 }

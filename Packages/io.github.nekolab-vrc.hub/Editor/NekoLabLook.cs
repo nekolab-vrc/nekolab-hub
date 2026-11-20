@@ -36,6 +36,8 @@ namespace NekoLab.Hub
         public static Color WarnColour => Dark ? new Color(0.96f, 0.76f, 0.32f) : new Color(0.5f, 0.28f, 0f);
         /* （まだの段階：明るいテーマでは、薄い丸に濃い数字。灰に白は読みにくいため） */
         public static Color StepOff => Dark ? Grey(0.4f) : Grey(0.8f);
+        /* ゲージのアバター本体の分：棒の地（Edge）と見分けが付く明るさ */
+        public static Color AvatarOwn => Dark ? new Color(0.80f, 0.82f, 0.86f) : new Color(0.24f, 0.28f, 0.36f);
         static Color ChipGround => Dark ? new Color(0.4f, 0.29f, 0.08f) : new Color(1f, 0.87f, 0.56f);
         public static Color BadColour => Dark ? new Color(1f, 0.46f, 0.46f) : new Color(0.74f, 0.1f, 0.1f);
         public static Color MutedColour => Dark ? Grey(0.6f) : Grey(0.3f);
@@ -241,7 +243,8 @@ namespace NekoLab.Hub
             var r = GUILayoutUtility.GetRect(14f, 18f, GUILayout.Width(14f), GUILayout.Height(18f));
             var mark = new Rect(r.x, r.y + 3f, 13f, 13f);
             Ring(mark, MutedColour);
-            GUI.Label(mark, new GUIContent("?", words), Mark);
+            GUI.Label(mark, new GUIContent(string.Empty, words), Mark);
+            CentredMark(mark, "?", Mark);
         }
 
         /// <summary>丸の中の数字（ホームの段階）。</summary>
@@ -251,7 +254,24 @@ namespace NekoLab.Hub
             var r = GUILayoutUtility.GetRect(16f, 18f, GUILayout.Width(16f), GUILayout.Height(18f));
             var disc = new Rect(r.x, r.y + 1f, 16f, 16f);
             Disc(disc, colour);
-            GUI.Label(disc, number.ToString(), !Dark && colour == StepOff ? NumberDark : Number);
+            /* 白い字と暗い字のうち、丸の色との明るさの差が大きい方（暗いテーマの明るい緑には、暗い字） */
+            var ground = Luminance(colour);
+            var dark = (ground + 0.05f) / (Luminance(NumberDark.normal.textColor) + 0.05f);
+            CentredMark(disc, number.ToString(), dark > 1.05f / (ground + 0.05f) ? NumberDark : Number);
+        }
+
+        static float Luminance(Color c)
+        {
+            c = c.linear;
+            return 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b;
+        }
+
+        /* 丸や輪の中の 1 字。窓の小さな太字（Inter）の「1」「3」「?」は左に寄って見えるので、わざと右へずらす（窓の絵を測った値。
+           「1」は縦の棒が真ん中に来る量） */
+        static void CentredMark(Rect r, string mark, GUIStyle style)
+        {
+            r.x += mark == "3" ? 2f : mark == "1" || mark == "?" ? 1f : 0f;
+            GUI.Label(r, mark, style);
         }
 
         /// <summary>
